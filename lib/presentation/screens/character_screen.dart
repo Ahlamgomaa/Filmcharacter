@@ -1,9 +1,10 @@
 import 'package:filmcharacters/business%20logic/cubit/characters_cubit.dart';
 import 'package:filmcharacters/constants/app_color.dart';
-import 'package:filmcharacters/data/models/character.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../data/models/character.dart';
 import '../widgets/character_items.dart';
 
 class CharacterScreen extends StatefulWidget {
@@ -14,21 +15,17 @@ class CharacterScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<CharacterScreen> {
-  late List<Character> allCharacters;
-
   @override
   void initState() {
     super.initState();
-    allCharacters =
-        BlocProvider.of<CharactersCubit>(context).getAllCharacters();
+    BlocProvider.of<CharactersCubit>(context).getAllCharacters();
   }
 
   Widget buildBloc() {
     return BlocBuilder<CharactersCubit, CharactersState>(
       builder: (context, state) {
         if (state is CharactersLoaded) {
-          allCharacters = (state).characters;
-          return buildLoadedList();
+          return buildLoadedList(state.characters);
         } else {
           return CircularProgressIndicator(color: AppColor.yellow);
         }
@@ -36,29 +33,29 @@ class _HomeScreenState extends State<CharacterScreen> {
     );
   }
 
-  Widget buildLoadedList() {
+  Widget buildLoadedList(List<Character> characters) {
     return SingleChildScrollView(
       child: Container(
         color: AppColor.grey,
-        child: Column(children: [buildCharacterGrid()]),
+        child: Column(children: [buildCharacterGrid(characters)]),
       ),
     );
   }
 
-  Widget buildCharacterGrid() {
+  Widget buildCharacterGrid(List<Character> characters) {
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 1,
-        mainAxisExtent: 1,
+        mainAxisExtent:250 ,
         childAspectRatio: 2 / 3,
       ),
       shrinkWrap: true,
       physics: const ClampingScrollPhysics(),
       padding: EdgeInsets.zero,
-      itemCount: allCharacters.length,
+      itemCount: characters.length,
       itemBuilder: (context, index) {
-        return CharacterItems();
+        return CharacterItems(character: characters[index]);
       },
     );
   }

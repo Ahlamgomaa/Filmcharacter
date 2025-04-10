@@ -1,26 +1,28 @@
 class Character {
-  int charId;
-  String name;
-  String nickNmae;
-  String imageUrl;
-  List<dynamic> jobs;
-  String status;
-  List<dynamic> appearance;
-  String portrayed;
-  String category;
-  List<dynamic> betterCallSaulAppearance;
-  Character.fromJson(Map<String, dynamic> json)
-      : charId = json['char_id'],
-        name = json['name'],
-        nickNmae = json['nickname'],
-        imageUrl = json['img'],
-        jobs = json['occupation'],
-        status = json['status'],
-        appearance = json['appearance'],
-        portrayed = json['portrayed'],
-        category = json['category'],
-        betterCallSaulAppearance = json['better_call_saul_appearance'];
-  
+  final int id;
+  final String name;
+  final String imageUrl;
+  final String status;
+  final String species;
+  final String gender;
 
+  Character({
+    required this.id,
+    required this.name,
+    required this.imageUrl,
+    required this.status,
+    required this.species,
+    required this.gender,
+  });
 
+  factory Character.fromJson(Map<String, dynamic> json) {
+    return Character(
+      id: json['id'],
+      name: json['name'],
+      imageUrl: json['image'],
+      status: json['status'],
+      species: json['species'],
+      gender: json['gender'],
+    );
+  }
 }

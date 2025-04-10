@@ -1,3 +1,3 @@
-final  baseUrl='https://www.breakingbadapi.com/api/';
+final  base='https://rickandmortyapi.com/api/';
 const  characterScreen='/';
 const  characterDetails='/characterDetails';
