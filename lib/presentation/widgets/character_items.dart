@@ -12,7 +12,7 @@ class CharacterItems extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsetsDirectional.fromSTEB(8, 8, 8, 8),
+      margin: EdgeInsetsDirectional.fromSTEB(10, 10, 1, 10),
       padding: EdgeInsetsDirectional.all(4),
       decoration: BoxDecoration(
         color: AppColor.white,

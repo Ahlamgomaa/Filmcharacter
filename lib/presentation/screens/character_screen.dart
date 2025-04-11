@@ -15,6 +15,89 @@ class CharacterScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<CharacterScreen> {
+  late List<Character> searchedCharacters;
+  late List<Character> allchararacter;
+  bool _isSearching = false;
+  final _searchTextController = TextEditingController();
+
+  Widget _buildSearchField() {
+    return TextField(
+      controller: _searchTextController,
+      cursorColor: AppColor.grey,
+      decoration: InputDecoration(
+        hintText: ("Search a Character"),
+        border: InputBorder.none,
+        hintStyle: TextStyle(
+          color: AppColor.grey,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      style: TextStyle(
+        color: AppColor.grey,
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+      onChanged: (searchCharacters) {
+        addSearchedCharactersToSearchedList(searchCharacters);
+      },
+    );
+  }
+
+  void addSearchedCharactersToSearchedList(String searchCharacters) {
+    searchedCharacters =
+        allchararacter
+            .where(
+              (character) =>
+                  character.name.toLowerCase().startsWith(searchCharacters),
+            )
+            .toList();
+    setState(() {});
+  }
+
+  List<Widget> _buildAppBarAction() {
+    if (_isSearching) {
+      return [
+        IconButton(
+          onPressed: () {
+            _clearSearching();
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.clear, color: AppColor.grey),
+        ),
+      ];
+    } else {
+      return [
+        IconButton(
+          onPressed: _startSreach,
+          icon: Icon(Icons.search, color: AppColor.grey),
+        ),
+      ];
+    }
+  }
+
+  void _startSreach() {
+    ModalRoute.of(
+      context,
+    )!.addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
+    setState(() {
+      _isSearching = true;
+    });
+  }
+
+  void _stopSearching() {
+    _clearSearching();
+    setState(() {
+      _isSearching = false;
+    });
+  }
+
+  void _clearSearching() {
+    setState(() {
+      _searchTextController.clear();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +108,7 @@ class _HomeScreenState extends State<CharacterScreen> {
     return BlocBuilder<CharactersCubit, CharactersState>(
       builder: (context, state) {
         if (state is CharactersLoaded) {
+          allchararacter = state.characters;
           return buildLoadedList(state.characters);
         } else {
           return CircularProgressIndicator(color: AppColor.yellow);
@@ -47,16 +131,35 @@ class _HomeScreenState extends State<CharacterScreen> {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 1,
-        mainAxisExtent:250 ,
+        mainAxisExtent: 250,
         childAspectRatio: 2 / 3,
       ),
       shrinkWrap: true,
       physics: const ClampingScrollPhysics(),
       padding: EdgeInsets.zero,
-      itemCount: characters.length,
+      itemCount:
+          _searchTextController.text.isEmpty
+              ? characters.length
+              : searchedCharacters.length,
       itemBuilder: (context, index) {
-        return CharacterItems(character: characters[index]);
+        return CharacterItems(
+          character:
+              _searchTextController.text.isEmpty
+                  ? characters[index]
+                  : searchedCharacters[index],
+        );
       },
+    );
+  }
+
+  Widget _buildAppBarTitle() {
+    return Text(
+      'Characters',
+      style: TextStyle(
+        color: AppColor.grey,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 
@@ -66,14 +169,8 @@ class _HomeScreenState extends State<CharacterScreen> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: AppColor.yellow,
-          title: Text(
-            'Characters',
-            style: TextStyle(
-              color: AppColor.grey,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          title: _isSearching ? _buildSearchField() : _buildAppBarTitle(),
+          actions: _buildAppBarAction(),
         ),
         body: buildBloc(),
       ),
