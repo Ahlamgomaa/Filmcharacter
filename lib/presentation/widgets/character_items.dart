@@ -1,6 +1,7 @@
 import 'package:filmcharacters/constants/app_color.dart';
 import 'package:flutter/material.dart';
 
+import '../../constants/strings.dart';
 import '../../data/models/character.dart';
 
 class CharacterItems extends StatelessWidget {
@@ -18,40 +19,51 @@ class CharacterItems extends StatelessWidget {
         color: AppColor.white,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: GridTile(
-        footer: Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-          color: Colors.black54,
-          alignment: Alignment.bottomCenter,
-          child: Text(
-            character.name,
-            style: TextStyle(
-              height: 1.3,
-              fontSize: 16,
-              color: AppColor.white,
-              fontWeight: FontWeight.bold,
+      child: InkWell(
+        onTap:
+            () => Navigator.pushNamed(
+              context,
+              characterDetails,
+              arguments: character,
             ),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-            textAlign: TextAlign.center,
+        child: GridTile(
+          footer: Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            color: Colors.black54,
+            alignment: Alignment.bottomCenter,
+            child: Text(
+              character.name,
+              style: TextStyle(
+                height: 1.3,
+                fontSize: 16,
+                color: AppColor.white,
+                fontWeight: FontWeight.bold,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+            ),
           ),
-        ),
-        child: Container(
-          color: AppColor.grey,
-          child:
-              character.imageUrl.isNotEmpty
-                  ? FadeInImage.assetNetwork(
-                    width: double.infinity,
-                    height: double.infinity,
-                    placeholder: 'assets/images/loading.gif',
-                    image: character.imageUrl,
-                    fit: BoxFit.cover,
-                  )
-                  : Image.asset(
-                    'assets/images/placeholder.png',
-                    fit: BoxFit.cover,
-                  ),
+          child: Hero(
+            tag: character.id,
+            child: Container(
+              color: AppColor.grey,
+              child:
+                  character.imageUrl.isNotEmpty
+                      ? FadeInImage.assetNetwork(
+                        width: double.infinity,
+                        height: double.infinity,
+                        placeholder: 'assets/images/loading.gif',
+                        image: character.imageUrl,
+                        fit: BoxFit.cover,
+                      )
+                      : Image.asset(
+                        'assets/images/placeholder.png',
+                        fit: BoxFit.cover,
+                      ),
+            ),
+          ),
         ),
       ),
     );

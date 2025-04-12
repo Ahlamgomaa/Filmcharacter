@@ -7,27 +7,33 @@ import 'package:filmcharacters/presentation/screens/character_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'data/models/character.dart';
+
 class AppRoute {
   late CharacterRepo characterRepo;
   late CharactersCubit charactersCubit;
+
   AppRoute() {
     characterRepo = CharacterRepo(CharacterApi());
     charactersCubit = CharactersCubit(characterRepo);
   }
+
   Route? generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case characterScreen:
         return MaterialPageRoute(
           builder:
               (_) => BlocProvider(
-                create:
-                    (BuildContext context) => charactersCubit,
+                create: (BuildContext context) => charactersCubit,
                 child: const CharacterScreen(),
               ),
         );
 
       case characterDetails:
-        return MaterialPageRoute(builder: (_) => const CharacterDetails());
+        final character = settings.arguments as Character;
+        return MaterialPageRoute(
+          builder: (_) => CharacterDetails(character: character),
+        );
     }
   }
 }
