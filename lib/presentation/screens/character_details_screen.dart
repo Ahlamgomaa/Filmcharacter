@@ -10,17 +10,28 @@ class CharacterDetails extends StatelessWidget {
 
   Widget buildSilverAppBar() {
     return SliverAppBar(
+      iconTheme: IconThemeData(color: Colors.white),
       expandedHeight: 700,
       pinned: true,
       stretch: true,
-      backgroundColor: AppColor.yellow,
+      backgroundColor: AppColor.purple,
 
       flexibleSpace: FlexibleSpaceBar(
         // centerTitle: true,
-        title: Text(
-          character.name,
-          style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
+        title: LayoutBuilder(
+          builder: (context, constraints) {
+            final isCollapsed = constraints.maxHeight <= 120;
+
+            return Text(
+              character.name,
+              style: TextStyle(
+                color: isCollapsed ? Colors.white : Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+          },
         ),
+
         background: Hero(
           tag: character.id,
           child: Image.network(character.imageUrl, fit: BoxFit.cover),
@@ -38,14 +49,14 @@ class CharacterDetails extends StatelessWidget {
           TextSpan(
             text: title,
             style: TextStyle(
-              color: AppColor.white,
+              color: AppColor.grey,
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
           ),
           TextSpan(
             text: value,
-            style: TextStyle(color: AppColor.white, fontSize: 16),
+            style: TextStyle(color: AppColor.grey, fontSize: 16),
           ),
         ],
       ),
@@ -54,7 +65,7 @@ class CharacterDetails extends StatelessWidget {
 
   Widget buildDivider(double endIndent) {
     return Divider(
-      color: Colors.yellow,
+      color: AppColor.purple,
       height: 32,
       endIndent: endIndent,
       thickness: 3,
@@ -65,7 +76,7 @@ class CharacterDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: AppColor.grey,
+        backgroundColor: AppColor.white,
         body: CustomScrollView(
           slivers: [
             buildSilverAppBar(),

@@ -24,18 +24,18 @@ class _HomeScreenState extends State<CharacterScreen> {
   Widget _buildSearchField() {
     return TextField(
       controller: _searchTextController,
-      cursorColor: AppColor.grey,
+      cursorColor: AppColor.white,
       decoration: InputDecoration(
         hintText: ("Search a Character"),
         border: InputBorder.none,
         hintStyle: TextStyle(
-          color: AppColor.grey,
+          color: AppColor.white,
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),
       ),
       style: TextStyle(
-        color: AppColor.grey,
+        color: AppColor.white,
         fontSize: 18,
         fontWeight: FontWeight.bold,
       ),
@@ -64,20 +64,20 @@ class _HomeScreenState extends State<CharacterScreen> {
             _clearSearching();
             Navigator.pop(context);
           },
-          icon: Icon(Icons.clear, color: AppColor.grey),
+          icon: Icon(Icons.clear, color: AppColor.white),
         ),
       ];
     } else {
       return [
         IconButton(
-          onPressed: _startSreach,
-          icon: Icon(Icons.search, color: AppColor.grey),
+          onPressed: _startSearch,
+          icon: Icon(Icons.search, color: AppColor.white),
         ),
       ];
     }
   }
 
-  void _startSreach() {
+  void _startSearch() {
     ModalRoute.of(
       context,
     )!.addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
@@ -112,7 +112,9 @@ class _HomeScreenState extends State<CharacterScreen> {
           allchararacter = state.characters;
           return buildLoadedList(state.characters);
         } else {
-          return CircularProgressIndicator(color: AppColor.yellow);
+          return Center(
+            child: CircularProgressIndicator(color: AppColor.purple),
+          );
         }
       },
     );
@@ -121,13 +123,33 @@ class _HomeScreenState extends State<CharacterScreen> {
   Widget buildLoadedList(List<Character> characters) {
     return SingleChildScrollView(
       child: Container(
-        color: AppColor.grey,
+        color: AppColor.white,
         child: Column(children: [buildCharacterGrid(characters)]),
       ),
     );
   }
 
   Widget buildCharacterGrid(List<Character> characters) {
+    final isSearching = _searchTextController.text.isNotEmpty;
+    final listToShow = isSearching ? searchedCharacters : characters;
+
+    if (listToShow.isEmpty) {
+      return Container(
+        height: MediaQuery.of(context).size.height,
+        color: Colors.white, // ← الخلفية البيضاء
+        child: Center(
+          child: Text(
+            'No character found !',
+            style: TextStyle(
+              color: AppColor.grey,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      );
+    }
+
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -138,17 +160,9 @@ class _HomeScreenState extends State<CharacterScreen> {
       shrinkWrap: true,
       physics: const ClampingScrollPhysics(),
       padding: EdgeInsets.zero,
-      itemCount:
-          _searchTextController.text.isEmpty
-              ? characters.length
-              : searchedCharacters.length,
+      itemCount: listToShow.length,
       itemBuilder: (context, index) {
-        return CharacterItems(
-          character:
-              _searchTextController.text.isEmpty
-                  ? characters[index]
-                  : searchedCharacters[index],
-        );
+        return CharacterItems(character: listToShow[index]);
       },
     );
   }
@@ -157,7 +171,7 @@ class _HomeScreenState extends State<CharacterScreen> {
     return Text(
       'Characters',
       style: TextStyle(
-        color: AppColor.grey,
+        color: AppColor.white,
         fontSize: 20,
         fontWeight: FontWeight.bold,
       ),
@@ -196,28 +210,35 @@ class _HomeScreenState extends State<CharacterScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColor.yellow,
-          title: _isSearching ? _buildSearchField() : _buildAppBarTitle(),
-          actions: _buildAppBarAction(),
-        ),
-        body: OfflineBuilder(
-          connectivityBuilder: (
-            BuildContext context,
-            List<ConnectivityResult> connectivity,
-            Widget child,
-          ) {
-            final bool connected =
-                !connectivity.contains(ConnectivityResult.none);
-            if (connected) {
-              return buildBloc();
-            } else {
-              return noInternet();
-            }
-          },
-          child: Center(child: CircularProgressIndicator()),
-        ),
+      child: OfflineBuilder(
+        connectivityBuilder: (
+          BuildContext context,
+          List<ConnectivityResult> connectivity,
+          Widget child,
+        ) {
+          final bool connected =
+              !connectivity.contains(ConnectivityResult.none);
+
+          return Scaffold(
+            appBar:
+                connected
+                    ? AppBar(
+                      backgroundColor: AppColor.purple,
+                      title:
+                          _isSearching
+                              ? _buildSearchField()
+                              : _buildAppBarTitle(),
+                      actions: _buildAppBarAction(),
+                      iconTheme: IconThemeData(
+                        color: _isSearching ? Colors.white : AppColor.grey,
+                      ),
+                    )
+                    : null,
+
+            body: connected ? buildBloc() : noInternet(),
+          );
+        },
+        child: Center(child: CircularProgressIndicator()),
       ),
     );
   }
